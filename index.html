@@ -6,14 +6,12 @@
 <title>M-sh31</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  /* تنسيق الصفحة بشكل عام */
   html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    /* منع تحديث الصفحة عند السحب للأسفل */
-    overscroll-behavior-y: contain; 
+    overscroll-behavior-y: contain;
     overflow: hidden;
   }
 
@@ -28,58 +26,14 @@
     position: relative;
   }
 
-  /* تنسيق حاوية الصورة */
-  .image-container {
-    display: none;
-    opacity: 0;
-    transform: scale(0.9) translateY(30px);
-    transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    text-align: center;
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    /* رفع العنصر للأعلى */
-    margin-top: -60px; 
-  }
-
-  .image-container.show {
-    display: block;
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-
-  /* تنسيق الجملة فوق الصورة */
-  .top-text {
-    font-size: 30px;
-    font-weight: 900;
-    color: #fff;
-    margin-bottom: 20px;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(76, 175, 80, 0.5);
-    letter-spacing: 2px;
-    animation: pulse 2s infinite;
-  }
-
-  /* تكبير الصورة لتأخذ عرض الشاشة بالكامل */
-  .image-container img {
-    width: 100vw; /* عرض الشاشة بالكامل */
-    height: auto;
-    max-height: 75vh; /* الحفاظ على ارتفاع مناسب */
-    object-fit: contain;
-    display: block;
-    margin: 0 auto;
-    /* إزالة الحواف الدائرية عند العرض الكامل */
-    border-radius: 0; 
-    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-  }
-
-  /* تنسيق النافذة المنبثقة (Popup) */
+  /* ===== النافذة المنبثقة ===== */
   .popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.75);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -100,6 +54,7 @@
     max-width: 400px;
     transform: translateY(30px);
     animation: slideUp 0.7s ease forwards;
+    position: relative;
   }
 
   .popup-box p {
@@ -112,7 +67,7 @@
     text-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
 
-  /* تنسيق الزر */
+  /* تنسيق زر حسناً */
   .popup-box button {
     position: relative;
     padding: 16px 50px;
@@ -127,24 +82,7 @@
     overflow: hidden;
     transition: all 0.3s ease;
     box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
-  }
-
-  .popup-box button::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
-  }
-
-  .popup-box button:hover::before {
-    width: 300px;
-    height: 300px;
+    z-index: 10;
   }
 
   .popup-box button:hover {
@@ -152,29 +90,89 @@
     box-shadow: 0 15px 35px rgba(76, 175, 80, 0.6);
   }
 
-  .popup-box button:active {
-    transform: translateY(0);
-    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+  /* تأثير اهتزاز النافذة */
+  .shake {
+    animation: shakeAnim 0.6s cubic-bezier(.36,.07,.19,.97) both;
   }
 
-  /* تأثيرات الحركة */
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(50px); }
-    to { opacity: 1; transform: translateY(0); }
+  @keyframes shakeAnim {
+    10%, 90% { transform: translate3d(-3px, 0, 0); }
+    20%, 80% { transform: translate3d(6px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-10px, 0, 0); }
+    40%, 60% { transform: translate3d(10px, 0, 0); }
   }
 
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-
-  .popup-overlay.hidden {
+  /* ===== صورة الصرخة المؤقتة ===== */
+  .scream-image {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    width: 90vw;
+    height: 90vw;
+    max-width: 500px;
+    max-height: 500px;
+    border-radius: 20px;
+    box-shadow: 0 0 100px rgba(255, 0, 0, 0.8);
+    z-index: 2000;
     opacity: 0;
     pointer-events: none;
+    transition: all 0.3s ease;
+    object-fit: cover;
   }
 
-  /* تنسيق عداد الزوار */
+  .scream-image.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+  }
+
+  /* ===== الصورة النهائية ===== */
+  .image-container {
+    display: none;
+    opacity: 0;
+    transform: scale(0.9) translateY(30px);
+    transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    margin-top: -60px;
+  }
+
+  .image-container.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  .top-text {
+    font-size: 30px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(76, 175, 80, 0.5);
+    letter-spacing: 2px;
+    animation: pulse 2s infinite;
+  }
+
+  /* الصورة النهائية بإطار جميل */
+  .image-container img {
+    width: 85vw;
+    height: auto;
+    max-height: 70vh;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    border-radius: 25px;
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+      0 0 0 5px rgba(76, 175, 80, 0.2),
+      0 20px 50px rgba(0,0,0,0.7),
+      0 0 30px rgba(76, 175, 80, 0.3);
+  }
+
+  /* ===== عداد الزوار ===== */
   .visitor-counter {
     position: fixed;
     bottom: 15px;
@@ -193,50 +191,167 @@
     gap: 5px;
   }
 
-  .visitor-counter img {
-    height: 18px;
-    display: block;
+  /* تأثيرات الحركة */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .popup-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
   }
 </style>
 </head>
 <body>
 
-<!-- عداد الزوار (أسفل اليسار) -->
+<!-- عداد الزوار -->
 <div class="visitor-counter">
-    <span>عدد الزوار:</span>
-    <img src="https://visitor-badge.laobi.icu/badge?page_id=m-sh31-site-visits&style=flat-square&color=4CAF50" alt="Visitors">
+    <span>عدد الزوار: <span id="counterValue">0</span></span>
 </div>
 
-<!-- حاوية الصورة (مخفية في البداية) -->
+<!-- الصورة النهائية (مخفية في البداية) -->
 <div class="image-container" id="imageContainer">
   <div class="top-text">( ارجع ارجع كبس )</div>
   <img src="logoo.jpg" alt="Logo">
 </div>
 
-<!-- النافذة المنبثقة (تظهر أولاً) -->
+<!-- صورة الصرخة المؤقتة (مخفية في البداية) -->
+<img src="scream.jpg" alt="Scream" class="scream-image" id="screamImage">
+
+<!-- صوت الصرخة -->
+<audio id="screamSound" preload="auto">
+  <source src="scream.mp3" type="audio/mpeg">
+</audio>
+
+<!-- النافذة المنبثقة -->
 <div class="popup-overlay" id="myPopup">
-  <div class="popup-box">
-    <!-- الجملة الجديدة -->
+  <div class="popup-box" id="popupBox">
     <p>جـعـلـك الـحـيـه 🐍</p>
-    <button onclick="showImage()">حسناً</button>
+    <button id="okButton">حسناً</button>
   </div>
 </div>
 
 <script>
-  function showImage() {
-    // إخفاء النافذة المنبثقة
-    var popup = document.getElementById("myPopup");
-    popup.classList.add("hidden");
+  // ============================================
+  // الجزء الأول: زر "حسناً" الذي يهرب
+  // ============================================
+  const okButton = document.getElementById('okButton');
+  const popupBox = document.getElementById('popupBox');
+  let escapeCount = 0;
+  const maxEscapes = 4;
 
-    // إظهار الصورة والجملة
-    var imageContainer = document.getElementById("imageContainer");
-    imageContainer.classList.add("show");
+  // دالة الهروب
+  function escapeButton() {
+    if (escapeCount >= maxEscapes) return; // توقف عن الهروب
 
-    // إزالة النافذة من الصفحة تماماً
-    setTimeout(function() {
-      popup.style.display = "none";
-    }, 600);
+    escapeCount++;
+    
+    // حرك الزر بشكل عشوائي
+    const randomX = (Math.random() - 0.5) * 200;
+    const randomY = (Math.random() - 0.5) * 200;
+    
+    okButton.style.transition = 'transform 0.3s ease';
+    okButton.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.9)`;
+    
+    // إذا وصل للحد الأقصى، أعد الزر لمكانه الأصلي
+    if (escapeCount >= maxEscapes) {
+      setTimeout(() => {
+        okButton.style.transition = 'transform 0.5s ease';
+        okButton.style.transform = 'translate(0, 0) scale(1)';
+      }, 300);
+    }
   }
+
+  // الهروب عند مرور المؤشر (للأجهزة التي بها ماوس)
+  okButton.addEventListener('mouseover', escapeButton);
+
+  // الهروب عند اللمس (للجوال)
+  okButton.addEventListener('touchstart', function(e) {
+    if (escapeCount < maxEscapes) {
+      e.preventDefault();
+      escapeButton();
+    }
+  });
+
+  // ============================================
+  // الجزء الثاني: عند الضغط النهائي
+  // ============================================
+  okButton.addEventListener('click', function() {
+    // 1. اهتزاز النافذة
+    popupBox.classList.add('shake');
+
+    // 2. بعد انتهاء الاهتزاز (بعد 600 مللي ثانية)
+    setTimeout(() => {
+      popupBox.classList.remove('shake');
+      showScream();
+    }, 600);
+  });
+
+  // ============================================
+  // الجزء الثالث: عرض الصرخة والصورة المؤقتة
+  // ============================================
+  function showScream() {
+    const screamImage = document.getElementById('screamImage');
+    const screamSound = document.getElementById('screamSound');
+
+    // إظهار الصورة والصوت
+    screamImage.classList.add('show');
+    
+    // تشغيل الصوت (بأعلى مستوى)
+    screamSound.volume = 1.0;
+    screamSound.play().catch(e => console.log('الصوت محجوب من المتصفح:', e));
+
+    // بعد ثانيتين، أخفِ الصرخة وأظهر الصورة النهائية
+    setTimeout(() => {
+      screamImage.classList.remove('show');
+      screamSound.pause();
+      screamSound.currentTime = 0;
+      
+      // إخفاء النافذة المنبثقة
+      const popup = document.getElementById('myPopup');
+      popup.classList.add('hidden');
+      
+      // إظهار الصورة النهائية
+      const imageContainer = document.getElementById('imageContainer');
+      imageContainer.classList.add('show');
+
+      // بدء عداد الزوار المجنون
+      startCrazyCounter();
+
+      // إزالة النافذة من الصفحة
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 600);
+    }, 2000);
+  }
+
+  // ============================================
+  // الجزء الرابع: عداد الزوار المجنون
+  // ============================================
+  function startCrazyCounter() {
+    const counterEl = document.getElementById('counterValue');
+    let count = 0;
+    
+    const interval = setInterval(() => {
+      count += Math.floor(Math.random() * 1500) + 500;
+      
+      if (count >= 999999) {
+        count = 999999;
+        counterEl.innerText = count.toLocaleString('ar-EG');
+        clearInterval(interval);
+      } else {
+        counterEl.innerText = count.toLocaleString('ar-EG');
+      }
+    }, 100);
+  }
+
 </script>
 
 </body>
