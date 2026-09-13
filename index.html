@@ -149,7 +149,6 @@
     animation: pulse 2s infinite;
   }
 
-  /* ===== الصورة النهائية بإطار أسود ===== */
   .image-container img {
     width: 85vw;
     height: auto;
@@ -204,14 +203,17 @@
 <body>
 
 <!-- ===== الصوتيات ===== -->
-<audio id="bgMusic" loop preload="auto">
-  <source src="all time.mp3" type="audio/mpeg">
+<!-- صوت الخلفية (25%، يبدأ فوراً، ينتهي عند انتهاء مدته) -->
+<audio id="bgMusic" preload="auto">
+  <source src="alltime.mp3" type="audio/mpeg">
 </audio>
 
+<!-- صوت دق الباب (4 ثواني) -->
 <audio id="doorKnock" preload="auto">
-  <source src="دق الباب.mp3" type="audio/mpeg">
+  <source src="knock.mp3" type="audio/mpeg">
 </audio>
 
+<!-- صوت الصرخة -->
 <audio id="screamSound" preload="auto">
   <source src="scream.mp3" type="audio/mpeg">
 </audio>
@@ -240,30 +242,35 @@
 
 <script>
   // ============================================
-  // الجزء 0: تشغيل صوت الخلفية تلقائياً (50%)
+  // الجزء 0: تشغيل صوت الخلفية (25%، يبدأ فوراً وينتهي عند انتهاء مدته)
   // ============================================
   const bgMusic = document.getElementById('bgMusic');
-  bgMusic.volume = 0.5;
+  bgMusic.volume = 0.25; // 25%
+  // ملاحظة: تمت إزالة loop لأننا نريد أن ينتهي عند انتهاء مدته
 
-  window.addEventListener('load', () => {
-    bgMusic.play().catch(e => {
-      // إذا حجب المتصفح التشغيل التلقائي، شغله عند أول تفاعل
-      document.body.addEventListener('touchstart', function playOnce() {
-        bgMusic.play();
-        bgMusic.volume = 0.5;
-        document.body.removeEventListener('touchstart', playOnce);
-      }, { once: true });
-      
-      document.body.addEventListener('click', function playOnce() {
-        bgMusic.play();
-        bgMusic.volume = 0.5;
-        document.body.removeEventListener('click', playOnce);
-      }, { once: true });
-    });
-  });
+  // محاولة التشغيل الفوري
+  // بعض المتصفحات لا تسمح بالتشغيل التلقائي بدون تفاعل
+  // لذا سيعمل عند أول لمسة من المستخدم
+  function playBgMusic() {
+    bgMusic.play().catch(e => console.log('صوت الخلفية محجوب:', e));
+  }
+
+  // محاولة التشغيل فوراً
+  playBgMusic();
+
+  // إذا حجبه المتصفح، شغله عند أول لمسة
+  document.body.addEventListener('touchstart', function playOnce() {
+    playBgMusic();
+    document.body.removeEventListener('touchstart', playOnce);
+  }, { once: true });
+
+  document.body.addEventListener('click', function playOnce() {
+    playBgMusic();
+    document.body.removeEventListener('click', playOnce);
+  }, { once: true });
 
   // ============================================
-  // الجزء الأول: زر "حسناً" الذي يهرب
+  // الجزء الأول: زر "حسناً" الذي يهرب (5 مرات)
   // ============================================
   const okButton = document.getElementById('okButton');
   const popupBox = document.getElementById('popupBox');
@@ -329,7 +336,6 @@
     screamSound.volume = 1.0;
     screamSound.play().catch(e => console.log('الصوت محجوب:', e));
 
-    // ===== تم التعديل: 3 ثوانٍ بدلاً من 2 =====
     setTimeout(() => {
       screamImage.classList.remove('show');
       screamSound.pause();
@@ -344,11 +350,11 @@
       startCrazyCounter();
 
       setTimeout(() => { popup.style.display = 'none'; }, 600);
-    }, 3000); // ← هنا التغيير
+    }, 3000);
   }
 
   // ============================================
-  // الجزء الرابع: عداد الزوار المجنون
+  // الجزء الرابع: عداد الزوار المجنون (أرقام إنجليزية)
   // ============================================
   function startCrazyCounter() {
     const counterEl = document.getElementById('counterValue');
@@ -357,10 +363,11 @@
       count += Math.floor(Math.random() * 1500) + 500;
       if (count >= 999999) {
         count = 999999;
-        counterEl.innerText = count.toLocaleString('ar-EG');
+        // استخدام toLocaleString('en-US') للأرقام الإنجليزية
+        counterEl.innerText = count.toLocaleString('en-US');
         clearInterval(interval);
       } else {
-        counterEl.innerText = count.toLocaleString('ar-EG');
+        counterEl.innerText = count.toLocaleString('en-US');
       }
     }, 100);
   }
