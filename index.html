@@ -1,5 +1,118 @@
-<img src="logoo.jpg" alt="Logo">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M-sh31</title>
+<style>
+  /* تنسيق الصفحة بشكل عام */
+  body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  /* تنسيق الصورة */
+  .logo {
+    display: block;
+    max-width: 200px; /* يمكنك تعديل الحجم حسب رغبتك */
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  /* تنسيق النافذة المنبثقة (Popup) */
+  .popup-overlay {
+    display: none; /* مخفية افتراضياً */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* خلفية معتمة */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .popup-box {
+    background-color: #ffffff;
+    padding: 30px 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 85%;
+    max-width: 350px;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  /* تنسيق النص داخل النافذة */
+  .popup-box p {
+    font-size: 22px;
+    font-weight: 900; /* خط عريض جداً */
+    color: #333333;
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+  }
+
+  /* تنسيق الزر */
+  .popup-box button {
+    padding: 12px 30px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+  }
+
+  .popup-box button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+
+  /* تأثير ظهور النافذة */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<!-- الصورة -->
+<img src="logoo.jpg" alt="Logo" class="logo">
+
+<!-- النافذة المنبثقة -->
+<div id="myPopup" class="popup-overlay">
+  <div class="popup-box">
+    <p>جعلك الحيه ماعندنا رابط</p>
+    <button onclick="closePopup()">حسناً</button>
+  </div>
+</div>
 
 <script>
-     alert("## جـعـلـك الحـيـه مـاعنـدنا رابـط ##")
+  // إظهار النافذة عند تحميل الصفحة
+  window.onload = function() {
+    setTimeout(function() {
+      document.getElementById("myPopup").style.display = "flex";
+    }, 500); // تظهر بعد نصف ثانية
+  };
+
+  // إغلاق النافذة عند الضغط على الزر
+  function closePopup() {
+    document.getElementById("myPopup").style.display = "none";
+  }
 </script>
+
+</body>
+</html>
