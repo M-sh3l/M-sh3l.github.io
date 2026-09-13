@@ -42,26 +42,27 @@
     transition: opacity 0.6s ease;
   }
 
+  /* تم تصغير المربع */
   .popup-box {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 50px 40px;
-    border-radius: 30px;
+    padding: 35px 25px;
+    border-radius: 25px;
     box-shadow: 0 25px 50px rgba(0,0,0,0.5);
     text-align: center;
-    width: 85%;
-    max-width: 400px;
+    width: 75%;
+    max-width: 320px;
     transform: translateY(30px);
     animation: slideUp 0.7s ease forwards;
     position: relative;
   }
 
   .popup-box p {
-    font-size: 32px;
+    font-size: 26px;
     font-weight: 900;
     color: #ffffff;
-    margin: 0 0 35px 0;
+    margin: 0 0 25px 0;
     line-height: 1.5;
     letter-spacing: 1px;
     text-shadow: 0 2px 10px rgba(0,0,0,0.3);
@@ -70,24 +71,19 @@
   /* تنسيق زر حسناً */
   .popup-box button {
     position: relative;
-    padding: 16px 50px;
+    padding: 12px 35px;
     background: linear-gradient(135deg, #4CAF50, #2E7D32);
     color: white;
     border: none;
     border-radius: 50px;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 700;
     font-family: 'Tajawal', sans-serif;
     cursor: pointer;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease;
     box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
     z-index: 10;
-  }
-
-  .popup-box button:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(76, 175, 80, 0.6);
   }
 
   /* تأثير اهتزاز النافذة */
@@ -156,7 +152,7 @@
     animation: pulse 2s infinite;
   }
 
-  /* الصورة النهائية بإطار جميل */
+  /* ===== الصورة النهائية بإطار أسود ===== */
   .image-container img {
     width: 85vw;
     height: auto;
@@ -165,11 +161,13 @@
     display: block;
     margin: 0 auto;
     border-radius: 25px;
-    border: 3px solid rgba(255, 255, 255, 0.15);
+    /* الإطار الأسود الأنيق */
+    border: 3px solid rgba(0, 0, 0, 0.8);
+    /* الظلال والتوهج الأسود */
     box-shadow: 
-      0 0 0 5px rgba(76, 175, 80, 0.2),
+      0 0 0 5px rgba(0, 0, 0, 0.4),
       0 20px 50px rgba(0,0,0,0.7),
-      0 0 30px rgba(76, 175, 80, 0.3);
+      0 0 40px rgba(0, 0, 0, 0.9);
   }
 
   /* ===== عداد الزوار ===== */
@@ -191,7 +189,6 @@
     gap: 5px;
   }
 
-  /* تأثيرات الحركة */
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(50px); }
     to { opacity: 1; transform: translateY(0); }
@@ -216,13 +213,13 @@
     <span>عدد الزوار: <span id="counterValue">0</span></span>
 </div>
 
-<!-- الصورة النهائية (مخفية في البداية) -->
+<!-- الصورة النهائية -->
 <div class="image-container" id="imageContainer">
   <div class="top-text">( ارجع ارجع كبس )</div>
   <img src="logoo.jpg" alt="Logo">
 </div>
 
-<!-- صورة الصرخة المؤقتة (مخفية في البداية) -->
+<!-- صورة الصرخة المؤقتة -->
 <img src="scream.jpg" alt="Scream" class="scream-image" id="screamImage">
 
 <!-- صوت الصرخة -->
@@ -245,34 +242,33 @@
   const okButton = document.getElementById('okButton');
   const popupBox = document.getElementById('popupBox');
   let escapeCount = 0;
-  const maxEscapes = 4;
+  const maxEscapes = 5;
 
-  // دالة الهروب
   function escapeButton() {
-    if (escapeCount >= maxEscapes) return; // توقف عن الهروب
+    if (escapeCount >= maxEscapes) return;
 
     escapeCount++;
-    
-    // حرك الزر بشكل عشوائي
-    const randomX = (Math.random() - 0.5) * 200;
-    const randomY = (Math.random() - 0.5) * 200;
-    
-    okButton.style.transition = 'transform 0.3s ease';
+
+    const randomX = (Math.random() - 0.5) * 400;
+    const randomY = (Math.random() - 0.5) * 400;
+
+    okButton.style.transition = 'transform 0.25s ease-out';
     okButton.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.9)`;
     
-    // إذا وصل للحد الأقصى، أعد الزر لمكانه الأصلي
+    setTimeout(() => {
+      okButton.style.transition = 'none';
+    }, 250);
+
     if (escapeCount >= maxEscapes) {
       setTimeout(() => {
         okButton.style.transition = 'transform 0.5s ease';
         okButton.style.transform = 'translate(0, 0) scale(1)';
-      }, 300);
+      }, 1000);
     }
   }
 
-  // الهروب عند مرور المؤشر (للأجهزة التي بها ماوس)
   okButton.addEventListener('mouseover', escapeButton);
 
-  // الهروب عند اللمس (للجوال)
   okButton.addEventListener('touchstart', function(e) {
     if (escapeCount < maxEscapes) {
       e.preventDefault();
@@ -284,10 +280,8 @@
   // الجزء الثاني: عند الضغط النهائي
   // ============================================
   okButton.addEventListener('click', function() {
-    // 1. اهتزاز النافذة
     popupBox.classList.add('shake');
 
-    // 2. بعد انتهاء الاهتزاز (بعد 600 مللي ثانية)
     setTimeout(() => {
       popupBox.classList.remove('shake');
       showScream();
@@ -301,31 +295,24 @@
     const screamImage = document.getElementById('screamImage');
     const screamSound = document.getElementById('screamSound');
 
-    // إظهار الصورة والصوت
     screamImage.classList.add('show');
     
-    // تشغيل الصوت (بأعلى مستوى)
     screamSound.volume = 1.0;
-    screamSound.play().catch(e => console.log('الصوت محجوب من المتصفح:', e));
+    screamSound.play().catch(e => console.log('الصوت محجوب:', e));
 
-    // بعد ثانيتين، أخفِ الصرخة وأظهر الصورة النهائية
     setTimeout(() => {
       screamImage.classList.remove('show');
       screamSound.pause();
       screamSound.currentTime = 0;
       
-      // إخفاء النافذة المنبثقة
       const popup = document.getElementById('myPopup');
       popup.classList.add('hidden');
       
-      // إظهار الصورة النهائية
       const imageContainer = document.getElementById('imageContainer');
       imageContainer.classList.add('show');
 
-      // بدء عداد الزوار المجنون
       startCrazyCounter();
 
-      // إزالة النافذة من الصفحة
       setTimeout(() => {
         popup.style.display = 'none';
       }, 600);
@@ -351,7 +338,6 @@
       }
     }, 100);
   }
-
 </script>
 
 </body>
