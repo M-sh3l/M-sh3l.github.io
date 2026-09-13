@@ -239,35 +239,45 @@
 
 <script>
   // ============================================
-  // 1. تشغيل صوت الخلفية (25%، يبدأ فوراً)
+  // 1. تشغيل صوت الخلفية (25%) عند أول تفاعل
   // ============================================
   const bgMusic = document.getElementById('bgMusic');
   bgMusic.volume = 0.25;
 
-  // محاولة التشغيل الفوري
-  bgMusic.play().catch(e => console.log('انتظر تفاعل المستخدم...'));
-
-  // إذا فشل التشغيل الفوري، شغله بأول تفاعل
-  const playOnFirstInteraction = () => {
-    if (bgMusic.paused) {
-      bgMusic.play().catch(e => console.log('خطأ:', e));
+  let bgStarted = false;
+  function startBgMusic() {
+    if (!bgStarted) {
+      bgMusic.play().then(() => {
+        bgStarted = true;
+      }).catch(e => console.log('تعذر تشغيل الصوت:', e));
     }
-    document.removeEventListener('touchstart', playOnFirstInteraction);
-    document.removeEventListener('click', playOnFirstInteraction);
-  };
-  document.addEventListener('touchstart', playOnFirstInteraction);
-  document.addEventListener('click', playOnFirstInteraction);
+  }
+
+  // محاولة التشغيل الفوري
+  startBgMusic();
+
+  // التشغيل عند أول لمسة أو ضغطة
+  document.addEventListener('touchstart', startBgMusic, { once: true });
+  document.addEventListener('click', startBgMusic, { once: true });
 
   // ============================================
-  // 2. زر "حسناً" الذي يهرب (3 مرات، متباعدة)
+  // 2. زر "حسناً" الذي يهرب (3 مرات فقط)
   // ============================================
   const okButton = document.getElementById('okButton');
   const popupBox = document.getElementById('popupBox');
+  
   let escapeCount = 0;
   const maxEscapes = 3;
+  let isEscaping = false; // منع الهروب المتزامن
+  let lastEscapeTime = 0;
 
   function escapeButton() {
-    if (escapeCount >= maxEscapes) return;
+    const now = Date.now();
+    // منع الهروب إذا كنا في منتصف هروب آخر أو لم يمر وقت كافٍ
+    if (isEscaping || escapeCount >= maxEscapes || (now - lastEscapeTime) < 1500) return;
+    
+    isEscaping = true;
+    lastEscapeTime = now;
     escapeCount++;
 
     const randomX = (Math.random() - 0.5) * 300;
@@ -276,26 +286,30 @@
     okButton.style.transition = 'transform 0.4s ease-out';
     okButton.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.9)`;
 
+    // إعادة الزر لمكانه بعد فترة
     setTimeout(() => {
       okButton.style.transition = 'none';
-    }, 400);
-
-    if (escapeCount >= maxEscapes) {
-      setTimeout(() => {
+      isEscaping = false;
+      
+      // إذا وصل للحد الأقصى، أعده لمكانه الأصلي
+      if (escapeCount >= maxEscapes) {
         okButton.style.transition = 'transform 0.6s ease';
         okButton.style.transform = 'translate(0, 0) scale(1)';
-      }, 1500);
-    }
+      }
+    }, 1500);
   }
 
-  okButton.addEventListener('mouseover', escapeButton);
+  // منع الهروب المتكرر عند مرور المؤشر
+  okButton.addEventListener('mouseover', function(e) {
+    if (!isEscaping && escapeCount < maxEscapes) {
+      escapeButton();
+    }
+  });
 
-  let lastTouchTime = 0;
+  // منع الهروب المتكرر عند اللمس
   okButton.addEventListener('touchstart', function(e) {
-    const now = Date.now();
-    if (escapeCount < maxEscapes && (now - lastTouchTime) > 800) {
+    if (!isEscaping && escapeCount < maxEscapes) {
       e.preventDefault();
-      lastTouchTime = now;
       escapeButton();
     }
   });
@@ -303,31 +317,36 @@
   // ============================================
   // 3. عند الضغط النهائي
   // ============================================
+  let isPlaying = false; // منع التكرار
+
   okButton.addEventListener('click', function() {
+    if (isPlaying) return; // منع التنفيذ المتكرر
+    isPlaying = true;
+
+    // اهتزاز مرة واحدة
     popupBox.classList.add('shake');
 
     setTimeout(() => {
       popupBox.classList.remove('shake');
 
+      // تشغيل صوت دق الباب (بعد حسناً، قبل الصرخة)
       const doorKnock = document.getElementById('doorKnock');
       doorKnock.volume = 1.0;
       doorKnock.currentTime = 0;
       doorKnock.play().catch(e => console.log('صوت دق الباب محجوب:', e));
 
+      // بعد 4 ثوانٍ من دق الباب، اظهر الصرخة
       setTimeout(() => {
         doorKnock.pause();
         doorKnock.currentTime = 0;
-        
-        setTimeout(() => {
-          showScream();
-        }, 1000);
+        showScream();
       }, 4000);
 
     }, 500);
   });
 
   // ============================================
-  // 5. عرض الصرخة (3 ثوانٍ، تظهر تدريجياً بسرعة)
+  // 4. عرض الصرخة (3 ثوانٍ)
   // ============================================
   function showScream() {
     const screamImage = document.getElementById('screamImage');
@@ -335,8 +354,10 @@
 
     screamImage.classList.add('show');
     screamSound.volume = 1.0;
+    screamSound.currentTime = 0;
     screamSound.play().catch(e => console.log('الصوت محجوب:', e));
 
+    // بعد 3 ثوانٍ، أخفِ الصرخة وأظهر الصورة النهائية
     setTimeout(() => {
       screamImage.classList.remove('show');
       screamSound.pause();
@@ -355,7 +376,7 @@
   }
 
   // ============================================
-  // 6. عداد الزوار (أرقام إنجليزية)
+  // 5. عداد الزوار (أرقام إنجليزية)
   // ============================================
   function startCrazyCounter() {
     const counterEl = document.getElementById('counterValue');
