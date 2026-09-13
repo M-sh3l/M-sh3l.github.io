@@ -42,7 +42,6 @@
     transition: opacity 0.6s ease;
   }
 
-  /* تم تصغير المربع */
   .popup-box {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(15px);
@@ -68,7 +67,6 @@
     text-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
 
-  /* تنسيق زر حسناً */
   .popup-box button {
     position: relative;
     padding: 12px 35px;
@@ -86,7 +84,6 @@
     z-index: 10;
   }
 
-  /* تأثير اهتزاز النافذة */
   .shake {
     animation: shakeAnim 0.6s cubic-bezier(.36,.07,.19,.97) both;
   }
@@ -161,9 +158,7 @@
     display: block;
     margin: 0 auto;
     border-radius: 25px;
-    /* الإطار الأسود الأنيق */
     border: 3px solid rgba(0, 0, 0, 0.8);
-    /* الظلال والتوهج الأسود */
     box-shadow: 
       0 0 0 5px rgba(0, 0, 0, 0.4),
       0 20px 50px rgba(0,0,0,0.7),
@@ -208,6 +203,19 @@
 </head>
 <body>
 
+<!-- ===== الصوتيات ===== -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="all time.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="doorKnock" preload="auto">
+  <source src="دق الباب.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="screamSound" preload="auto">
+  <source src="scream.mp3" type="audio/mpeg">
+</audio>
+
 <!-- عداد الزوار -->
 <div class="visitor-counter">
     <span>عدد الزوار: <span id="counterValue">0</span></span>
@@ -222,11 +230,6 @@
 <!-- صورة الصرخة المؤقتة -->
 <img src="scream.jpg" alt="Scream" class="scream-image" id="screamImage">
 
-<!-- صوت الصرخة -->
-<audio id="screamSound" preload="auto">
-  <source src="scream.mp3" type="audio/mpeg">
-</audio>
-
 <!-- النافذة المنبثقة -->
 <div class="popup-overlay" id="myPopup">
   <div class="popup-box" id="popupBox">
@@ -237,6 +240,29 @@
 
 <script>
   // ============================================
+  // الجزء 0: تشغيل صوت الخلفية تلقائياً (50%)
+  // ============================================
+  const bgMusic = document.getElementById('bgMusic');
+  bgMusic.volume = 0.5;
+
+  window.addEventListener('load', () => {
+    bgMusic.play().catch(e => {
+      // إذا حجب المتصفح التشغيل التلقائي، شغله عند أول تفاعل
+      document.body.addEventListener('touchstart', function playOnce() {
+        bgMusic.play();
+        bgMusic.volume = 0.5;
+        document.body.removeEventListener('touchstart', playOnce);
+      }, { once: true });
+      
+      document.body.addEventListener('click', function playOnce() {
+        bgMusic.play();
+        bgMusic.volume = 0.5;
+        document.body.removeEventListener('click', playOnce);
+      }, { once: true });
+    });
+  });
+
+  // ============================================
   // الجزء الأول: زر "حسناً" الذي يهرب
   // ============================================
   const okButton = document.getElementById('okButton');
@@ -246,19 +272,12 @@
 
   function escapeButton() {
     if (escapeCount >= maxEscapes) return;
-
     escapeCount++;
-
     const randomX = (Math.random() - 0.5) * 400;
     const randomY = (Math.random() - 0.5) * 400;
-
     okButton.style.transition = 'transform 0.25s ease-out';
     okButton.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.9)`;
-    
-    setTimeout(() => {
-      okButton.style.transition = 'none';
-    }, 250);
-
+    setTimeout(() => { okButton.style.transition = 'none'; }, 250);
     if (escapeCount >= maxEscapes) {
       setTimeout(() => {
         okButton.style.transition = 'transform 0.5s ease';
@@ -268,7 +287,6 @@
   }
 
   okButton.addEventListener('mouseover', escapeButton);
-
   okButton.addEventListener('touchstart', function(e) {
     if (escapeCount < maxEscapes) {
       e.preventDefault();
@@ -284,22 +302,34 @@
 
     setTimeout(() => {
       popupBox.classList.remove('shake');
-      showScream();
+
+      // تشغيل صوت دق الباب (4 ثواني)
+      const doorKnock = document.getElementById('doorKnock');
+      doorKnock.volume = 1.0;
+      doorKnock.currentTime = 0;
+      doorKnock.play().catch(e => console.log('صوت دق الباب محجوب:', e));
+
+      setTimeout(() => {
+        doorKnock.pause();
+        doorKnock.currentTime = 0;
+        showScream();
+      }, 4000);
+
     }, 600);
   });
 
   // ============================================
-  // الجزء الثالث: عرض الصرخة والصورة المؤقتة
+  // الجزء الثالث: عرض الصرخة (3 ثوانٍ)
   // ============================================
   function showScream() {
     const screamImage = document.getElementById('screamImage');
     const screamSound = document.getElementById('screamSound');
 
     screamImage.classList.add('show');
-    
     screamSound.volume = 1.0;
     screamSound.play().catch(e => console.log('الصوت محجوب:', e));
 
+    // ===== تم التعديل: 3 ثوانٍ بدلاً من 2 =====
     setTimeout(() => {
       screamImage.classList.remove('show');
       screamSound.pause();
@@ -313,10 +343,8 @@
 
       startCrazyCounter();
 
-      setTimeout(() => {
-        popup.style.display = 'none';
-      }, 600);
-    }, 2000);
+      setTimeout(() => { popup.style.display = 'none'; }, 600);
+    }, 3000); // ← هنا التغيير
   }
 
   // ============================================
@@ -325,10 +353,8 @@
   function startCrazyCounter() {
     const counterEl = document.getElementById('counterValue');
     let count = 0;
-    
     const interval = setInterval(() => {
       count += Math.floor(Math.random() * 1500) + 500;
-      
       if (count >= 999999) {
         count = 999999;
         counterEl.innerText = count.toLocaleString('ar-EG');
