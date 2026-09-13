@@ -273,15 +273,13 @@
     const randomX = (Math.random() - 0.5) * 300;
     const randomY = (Math.random() - 0.5) * 300;
 
-    okButton.style.transition = 'transform 0.4s ease-out'; // هروب أبطأ قليلاً
+    okButton.style.transition = 'transform 0.4s ease-out';
     okButton.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.9)`;
 
-    // بعد كل هروب، اجعل الزر يستقر لمدة 1.5 ثانية قبل أن يهرب مرة أخرى
     setTimeout(() => {
       okButton.style.transition = 'none';
     }, 400);
 
-    // إذا وصل للحد الأقصى، أعده لمكانه الأصلي بعد 2 ثانية
     if (escapeCount >= maxEscapes) {
       setTimeout(() => {
         okButton.style.transition = 'transform 0.6s ease';
@@ -290,14 +288,12 @@
     }
   }
 
-  // الهروب عند مرور المؤشر
   okButton.addEventListener('mouseover', escapeButton);
 
-  // الهروب عند اللمس (بفاصل زمني)
   let lastTouchTime = 0;
   okButton.addEventListener('touchstart', function(e) {
     const now = Date.now();
-    if (escapeCount < maxEscapes && (now - lastTouchTime) > 800) { // فاصل 0.8 ثانية بين اللمسات
+    if (escapeCount < maxEscapes && (now - lastTouchTime) > 800) {
       e.preventDefault();
       lastTouchTime = now;
       escapeButton();
@@ -308,30 +304,26 @@
   // 3. عند الضغط النهائي
   // ============================================
   okButton.addEventListener('click', function() {
-    // اهتزاز مرة واحدة فقط (خفيف)
     popupBox.classList.add('shake');
 
     setTimeout(() => {
       popupBox.classList.remove('shake');
 
-      // تشغيل صوت دق الباب (4 ثواني)
       const doorKnock = document.getElementById('doorKnock');
       doorKnock.volume = 1.0;
       doorKnock.currentTime = 0;
       doorKnock.play().catch(e => console.log('صوت دق الباب محجوب:', e));
 
-      // 4. بعد 4 ثوانٍ، انتظر ثانية واحدة ثم اظهر الصرخة
       setTimeout(() => {
         doorKnock.pause();
         doorKnock.currentTime = 0;
         
-        // فاصل زمني 1 ثانية قبل الصرخة
         setTimeout(() => {
           showScream();
         }, 1000);
       }, 4000);
 
-    }, 500); // اهتزاز أقصر
+    }, 500);
   });
 
   // ============================================
@@ -341,7 +333,6 @@
     const screamImage = document.getElementById('screamImage');
     const screamSound = document.getElementById('screamSound');
 
-    // إظهار الصرخة تدريجياً
     screamImage.classList.add('show');
     screamSound.volume = 1.0;
     screamSound.play().catch(e => console.log('الصوت محجوب:', e));
@@ -373,7 +364,6 @@
       count += Math.floor(Math.random() * 1500) + 500;
       if (count >= 999999) {
         count = 999999;
-        // استخدام 'en-US' لضمان الأرقام الإنجليزية
         counterEl.innerText = count.toLocaleString('en-US');
         clearInterval(interval);
       } else {
