@@ -13,104 +13,138 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f2f5;
+    background: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%); /* خلفية داكنة أنيقة */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
   }
 
-  /* تنسيق الصورة */
-  .logo {
-    display: block;
-    max-width: 200px; /* يمكنك تعديل الحجم حسب رغبتك */
-    width: 100%;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  /* تنسيق حاوية الصورة */
+  .image-container {
+    display: none; /* مخفية في البداية */
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* تأثير ظهور مرن */
+    text-align: center;
+  }
+
+  .image-container img {
+    max-width: 85vw; /* حجم كبير يناسب الشاشات */
+    max-height: 80vh;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    border: 3px solid rgba(255, 255, 255, 0.1);
   }
 
   /* تنسيق النافذة المنبثقة (Popup) */
   .popup-overlay {
-    display: none; /* مخفية افتراضياً */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* خلفية معتمة */
+    background-color: rgba(0, 0, 0, 0.85); /* خلفية معتمة جداً لإبراز الرسالة */
+    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    backdrop-filter: blur(5px); /* تأثير ضبابي خلف النافذة */
+    transition: opacity 0.5s ease;
   }
 
   .popup-box {
-    background-color: #ffffff;
-    padding: 30px 25px;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    padding: 40px 30px;
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     text-align: center;
     width: 85%;
-    max-width: 350px;
-    animation: fadeIn 0.3s ease-in-out;
+    max-width: 400px;
+    transform: translateY(20px);
+    animation: slideUp 0.6s ease forwards;
   }
 
   /* تنسيق النص داخل النافذة */
   .popup-box p {
-    font-size: 22px;
-    font-weight: 900; /* خط عريض جداً */
-    color: #333333;
-    margin: 0 0 20px 0;
-    line-height: 1.5;
-    letter-spacing: 0.5px;
+    font-size: 26px;
+    font-weight: 900;
+    color: #1a1a1a;
+    margin: 0 0 30px 0;
+    line-height: 1.6;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
   }
 
   /* تنسيق الزر */
   .popup-box button {
-    padding: 12px 30px;
-    background-color: #4CAF50;
+    padding: 14px 40px;
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
     color: white;
     border: none;
     border-radius: 50px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
   }
 
   .popup-box button:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(76, 175, 80, 0.6);
   }
 
-  /* تأثير ظهور النافذة */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+  .popup-box button:active {
+    transform: translateY(1px);
+  }
+
+  /* تأثيرات الحركة */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* تنسيقات عند إخفاء النافذة */
+  .popup-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .image-container.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
   }
 </style>
 </head>
 <body>
 
-<!-- الصورة -->
-<img src="logoo.jpg" alt="Logo" class="logo">
+<!-- حاوية الصورة (مخفية في البداية) -->
+<div class="image-container" id="imageContainer">
+  <img src="logoo.jpg" alt="Logo">
+</div>
 
-<!-- النافذة المنبثقة -->
-<div id="myPopup" class="popup-overlay">
+<!-- النافذة المنبثقة (تظهر أولاً) -->
+<div class="popup-overlay" id="myPopup">
   <div class="popup-box">
     <p>جعلك الحيه ماعندنا رابط</p>
-    <button onclick="closePopup()">حسناً</button>
+    <button onclick="showImage()">حسناً</button>
   </div>
 </div>
 
 <script>
-  // إظهار النافذة عند تحميل الصفحة
-  window.onload = function() {
-    setTimeout(function() {
-      document.getElementById("myPopup").style.display = "flex";
-    }, 500); // تظهر بعد نصف ثانية
-  };
+  function showImage() {
+    // إخفاء النافذة المنبثقة
+    var popup = document.getElementById("myPopup");
+    popup.classList.add("hidden");
 
-  // إغلاق النافذة عند الضغط على الزر
-  function closePopup() {
-    document.getElementById("myPopup").style.display = "none";
+    // إظهار الصورة
+    var imageContainer = document.getElementById("imageContainer");
+    imageContainer.classList.add("show");
+
+    // إزالة النافذة من الصفحة تماماً بعد انتهاء تأثير الإخفاء
+    setTimeout(function() {
+      popup.style.display = "none";
+    }, 500);
   }
 </script>
 
