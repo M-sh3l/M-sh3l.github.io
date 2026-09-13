@@ -203,6 +203,8 @@
 <body>
 
 <!-- ===== الصوتيات ===== -->
+<!-- تم إلغاء صوت الخلفية (alltime) -->
+
 <audio id="doorKnock" preload="auto">
   <source src="knock.mp3" type="audio/mpeg">
 </audio>
@@ -242,7 +244,7 @@
   
   let escapeCount = 0;
   const maxEscapes = 3;
-  let isEscaping = false;
+  let isEscaping = false; // منع الهروب المتزامن
   let lastEscapeTime = 0;
 
   function escapeButton() {
@@ -274,7 +276,7 @@
   }
 
   // منع الهروب المتكرر عند مرور المؤشر
-  okButton.addEventListener('mouseover', function() {
+  okButton.addEventListener('mouseover', function(e) {
     if (!isEscaping && escapeCount < maxEscapes) {
       escapeButton();
     }
@@ -305,7 +307,7 @@
 
       // تشغيل صوت دق الباب (بعد حسناً، قبل الصرخة)
       const doorKnock = document.getElementById('doorKnock');
-      doorKnock.volume = 2.0; // 200%
+      doorKnock.volume = 1.0;
       doorKnock.currentTime = 0;
       doorKnock.play().catch(e => console.log('صوت دق الباب محجوب:', e));
 
