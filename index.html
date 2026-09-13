@@ -26,31 +26,6 @@
     position: relative;
   }
 
-  /* ===== 5. خلفية النجوم المتحركة ===== */
-  .stars-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .star {
-    position: absolute;
-    background-color: #fff;
-    border-radius: 50%;
-    opacity: 0.5;
-    animation: twinkle linear infinite;
-  }
-
-  @keyframes twinkle {
-    0%, 100% { opacity: 0.1; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.3); }
-  }
-
   /* ===== النافذة المنبثقة ===== */
   .popup-overlay {
     position: fixed;
@@ -80,7 +55,6 @@
     transform: translateY(30px);
     animation: slideUp 0.7s ease forwards;
     position: relative;
-    z-index: 10;
   }
 
   .popup-box p {
@@ -105,11 +79,12 @@
     font-family: 'Tajawal', sans-serif;
     cursor: pointer;
     overflow: hidden;
-    transition: transform 0.4s ease, padding 0.4s ease, font-size 0.4s ease;
+    transition: transform 0.3s ease;
     box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
     z-index: 10;
   }
 
+  /* اهتزاز خفيف لمرة واحدة */
   .shake {
     animation: shakeAnim 0.4s ease-in-out;
   }
@@ -143,84 +118,6 @@
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
     pointer-events: auto;
-  }
-
-  /* ===== 10. شاشة Glitch ===== */
-  .glitch-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #000;
-    z-index: 3000;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
-
-  .glitch-overlay.show {
-    display: flex;
-  }
-
-  .glitch-overlay::before,
-  .glitch-overlay::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-  }
-
-  .glitch-overlay::before {
-    animation: glitchAnim1 0.3s infinite linear alternate-reverse;
-    background: rgba(255, 0, 0, 0.1);
-    left: 2px;
-  }
-
-  .glitch-overlay::after {
-    animation: glitchAnim2 0.2s infinite linear alternate-reverse;
-    background: rgba(0, 255, 255, 0.1);
-    left: -2px;
-  }
-
-  @keyframes glitchAnim1 {
-    0% { clip-path: inset(20% 0 30% 0); transform: translateX(-5px); }
-    20% { clip-path: inset(60% 0 10% 0); transform: translateX(5px); }
-    40% { clip-path: inset(10% 0 80% 0); transform: translateX(-3px); }
-    60% { clip-path: inset(40% 0 40% 0); transform: translateX(3px); }
-    80% { clip-path: inset(80% 0 5% 0); transform: translateX(-5px); }
-    100% { clip-path: inset(30% 0 50% 0); transform: translateX(5px); }
-  }
-
-  @keyframes glitchAnim2 {
-    0% { clip-path: inset(50% 0 20% 0); transform: translateX(5px); }
-    25% { clip-path: inset(10% 0 70% 0); transform: translateX(-5px); }
-    50% { clip-path: inset(70% 0 10% 0); transform: translateX(3px); }
-    75% { clip-path: inset(30% 0 40% 0); transform: translateX(-3px); }
-    100% { clip-path: inset(20% 0 60% 0); transform: translateX(5px); }
-  }
-
-  .glitch-text {
-    color: #fff;
-    font-size: 24px;
-    font-weight: 900;
-    font-family: 'Tajawal', sans-serif;
-    z-index: 1;
-    text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
-    animation: glitchText 0.1s infinite;
-  }
-
-  @keyframes glitchText {
-    0% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
-    100% { transform: translate(0); }
   }
 
   /* ===== الصورة النهائية ===== */
@@ -305,14 +202,6 @@
 </head>
 <body>
 
-<!-- ===== 5. خلفية النجوم ===== -->
-<div class="stars-bg" id="starsBg"></div>
-
-<!-- ===== 10. شاشة Glitch ===== -->
-<div class="glitch-overlay" id="glitchOverlay">
-  <div class="glitch-text">جاري التحميل...</div>
-</div>
-
 <!-- ===== الصوتيات ===== -->
 <audio id="doorKnock" preload="auto">
   <source src="knock.mp3" type="audio/mpeg">
@@ -346,33 +235,7 @@
 
 <script>
   // ============================================
-  // 5. توليد النجوم تلقائياً
-  // ============================================
-  const starsBg = document.getElementById('starsBg');
-  const starCount = 80; // عدد النجوم
-
-  for (let i = 0; i < starCount; i++) {
-    const star = document.createElement('div');
-    star.classList.add('star');
-    
-    // حجم عشوائي
-    const size = Math.random() * 3 + 1;
-    star.style.width = size + 'px';
-    star.style.height = size + 'px';
-    
-    // مكان عشوائي
-    star.style.left = Math.random() * 100 + '%';
-    star.style.top = Math.random() * 100 + '%';
-    
-    // مدة ومدة تأخير عشوائية
-    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-    star.style.animationDelay = (Math.random() * 5) + 's';
-    
-    starsBg.appendChild(star);
-  }
-
-  // ============================================
-  // 1. زر "حسناً" الذي يهرب (3 مرات) + 7 (يتصغر)
+  // 1. زر "حسناً" الذي يهرب (3 مرات فقط)
   // ============================================
   const okButton = document.getElementById('okButton');
   const popupBox = document.getElementById('popupBox');
@@ -384,6 +247,7 @@
 
   function escapeButton() {
     const now = Date.now();
+    // منع الهروب إذا كنا في منتصف هروب آخر أو لم يمر وقت كافٍ
     if (isEscaping || escapeCount >= maxEscapes || (now - lastEscapeTime) < 1500) return;
     
     isEscaping = true;
@@ -393,17 +257,15 @@
     const randomX = (Math.random() - 0.5) * 300;
     const randomY = (Math.random() - 0.5) * 300;
 
-    // تصغير الزر تدريجياً مع كل هروب
-    const scaleFactor = 1 - (escapeCount * 0.1); // 1 -> 0.9 -> 0.8 -> 0.7
-
     okButton.style.transition = 'transform 0.4s ease-out';
-    okButton.style.transform = `translate(${randomX}px, ${randomY}px) scale(${scaleFactor})`;
+    okButton.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.9)`;
 
+    // إعادة الزر لمكانه بعد فترة
     setTimeout(() => {
       okButton.style.transition = 'none';
       isEscaping = false;
       
-      // إذا وصل للحد الأقصى، أعده لمكانه الأصلي بحجمه الطبيعي
+      // إذا وصل للحد الأقصى، أعده لمكانه الأصلي
       if (escapeCount >= maxEscapes) {
         okButton.style.transition = 'transform 0.6s ease';
         okButton.style.transform = 'translate(0, 0) scale(1)';
@@ -411,10 +273,14 @@
     }, 1500);
   }
 
+  // منع الهروب المتكرر عند مرور المؤشر
   okButton.addEventListener('mouseover', function() {
-    if (!isEscaping && escapeCount < maxEscapes) escapeButton();
+    if (!isEscaping && escapeCount < maxEscapes) {
+      escapeButton();
+    }
   });
 
+  // منع الهروب المتكرر عند اللمس
   okButton.addEventListener('touchstart', function(e) {
     if (!isEscaping && escapeCount < maxEscapes) {
       e.preventDefault();
@@ -425,23 +291,25 @@
   // ============================================
   // 2. عند الضغط النهائي
   // ============================================
-  let isPlaying = false;
+  let isPlaying = false; // منع التكرار
 
   okButton.addEventListener('click', function() {
-    if (isPlaying) return;
+    if (isPlaying) return; // منع التنفيذ المتكرر
     isPlaying = true;
 
+    // اهتزاز مرة واحدة
     popupBox.classList.add('shake');
 
     setTimeout(() => {
       popupBox.classList.remove('shake');
 
-      // رفع صوت دق الباب إلى 200%
+      // تشغيل صوت دق الباب (بعد حسناً، قبل الصرخة)
       const doorKnock = document.getElementById('doorKnock');
-      doorKnock.volume = 2.0;
+      doorKnock.volume = 2.0; // 200%
       doorKnock.currentTime = 0;
       doorKnock.play().catch(e => console.log('صوت دق الباب محجوب:', e));
 
+      // بعد 4 ثوانٍ من دق الباب، اظهر الصرخة
       setTimeout(() => {
         doorKnock.pause();
         doorKnock.currentTime = 0;
@@ -463,27 +331,11 @@
     screamSound.currentTime = 0;
     screamSound.play().catch(e => console.log('الصوت محجوب:', e));
 
+    // بعد 3 ثوانٍ، أخفِ الصرخة وأظهر الصورة النهائية
     setTimeout(() => {
       screamImage.classList.remove('show');
       screamSound.pause();
       screamSound.currentTime = 0;
-      
-      // ===== 10. شاشة Glitch لمدة ثانية =====
-      showGlitch();
-      
-    }, 3000);
-  }
-
-  // ============================================
-  // 10. عرض شاشة Glitch ثم الصورة النهائية
-  // ============================================
-  function showGlitch() {
-    const glitchOverlay = document.getElementById('glitchOverlay');
-    glitchOverlay.classList.add('show');
-
-    // بعد ثانية واحدة، أخفِ الـ Glitch وأظهر الصورة النهائية
-    setTimeout(() => {
-      glitchOverlay.classList.remove('show');
       
       const popup = document.getElementById('myPopup');
       popup.classList.add('hidden');
@@ -494,7 +346,7 @@
       startCrazyCounter();
 
       setTimeout(() => { popup.style.display = 'none'; }, 600);
-    }, 1000);
+    }, 3000);
   }
 
   // ============================================
