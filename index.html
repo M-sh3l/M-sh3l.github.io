@@ -4,35 +4,59 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>M-sh31</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   /* تنسيق الصفحة بشكل عام */
   body {
     margin: 0;
     padding: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%); /* خلفية داكنة أنيقة */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1a 100%);
+    font-family: 'Tajawal', sans-serif;
     overflow: hidden;
+    color: white;
+    position: relative;
   }
 
   /* تنسيق حاوية الصورة */
   .image-container {
-    display: none; /* مخفية في البداية */
+    display: none;
     opacity: 0;
-    transform: scale(0.8);
-    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* تأثير ظهور مرن */
+    transform: scale(0.8) translateY(20px);
+    transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .image-container.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  /* تنسيق الجملة فوق الصورة */
+  .top-text {
+    font-size: 28px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(76, 175, 80, 0.5);
+    letter-spacing: 1px;
+    animation: pulse 2s infinite;
   }
 
   .image-container img {
-    max-width: 85vw; /* حجم كبير يناسب الشاشات */
-    max-height: 80vh;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-    border: 3px solid rgba(255, 255, 255, 0.1);
+    max-width: 85vw;
+    max-height: 75vh;
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 5px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    object-fit: contain;
   }
 
   /* تنسيق النافذة المنبثقة (Popup) */
@@ -42,84 +66,131 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85); /* خلفية معتمة جداً لإبراز الرسالة */
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    backdrop-filter: blur(5px); /* تأثير ضبابي خلف النافذة */
-    transition: opacity 0.5s ease;
+    backdrop-filter: blur(8px);
+    transition: opacity 0.6s ease;
   }
 
   .popup-box {
-    background: linear-gradient(145deg, #ffffff, #f0f0f0);
-    padding: 40px 30px;
-    border-radius: 25px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 50px 40px;
+    border-radius: 30px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
     text-align: center;
     width: 85%;
     max-width: 400px;
-    transform: translateY(20px);
-    animation: slideUp 0.6s ease forwards;
+    transform: translateY(30px);
+    animation: slideUp 0.7s ease forwards;
   }
 
-  /* تنسيق النص داخل النافذة */
   .popup-box p {
-    font-size: 26px;
+    font-size: 30px;
     font-weight: 900;
-    color: #1a1a1a;
-    margin: 0 0 30px 0;
-    line-height: 1.6;
+    color: #ffffff;
+    margin: 0 0 35px 0;
+    line-height: 1.5;
     letter-spacing: 1px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
 
   /* تنسيق الزر */
   .popup-box button {
-    padding: 14px 40px;
+    position: relative;
+    padding: 16px 50px;
     background: linear-gradient(135deg, #4CAF50, #2E7D32);
     color: white;
     border: none;
     border-radius: 50px;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: 'Tajawal', sans-serif;
     cursor: pointer;
+    overflow: hidden;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+    box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+  }
+
+  .popup-box button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+  }
+
+  .popup-box button:hover::before {
+    width: 300px;
+    height: 300px;
   }
 
   .popup-box button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(76, 175, 80, 0.6);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(76, 175, 80, 0.6);
   }
 
   .popup-box button:active {
-    transform: translateY(1px);
+    transform: translateY(0);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
   }
 
   /* تأثيرات الحركة */
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
+    from { opacity: 0; transform: translateY(50px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* تنسيقات عند إخفاء النافذة */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
   .popup-overlay.hidden {
     opacity: 0;
     pointer-events: none;
   }
 
-  .image-container.show {
-    display: block;
-    opacity: 1;
-    transform: scale(1);
+  /* تنسيق عداد الزوار */
+  .visitor-counter {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    transition: color 0.3s ease;
+  }
+
+  .visitor-counter:hover {
+    color: #4CAF50;
   }
 </style>
 </head>
 <body>
 
+<!-- عداد الزوار (أسفل اليسار) -->
+<div class="visitor-counter" id="visitorCount">عدد الزوار: ...</div>
+
 <!-- حاوية الصورة (مخفية في البداية) -->
 <div class="image-container" id="imageContainer">
+  <div class="top-text">( ارجع ارجع كبس )</div>
   <img src="logoo.jpg" alt="Logo">
 </div>
 
@@ -132,20 +203,32 @@
 </div>
 
 <script>
+  // دالة إظهار الصورة عند الضغط على الزر
   function showImage() {
-    // إخفاء النافذة المنبثقة
     var popup = document.getElementById("myPopup");
     popup.classList.add("hidden");
 
-    // إظهار الصورة
     var imageContainer = document.getElementById("imageContainer");
     imageContainer.classList.add("show");
 
-    // إزالة النافذة من الصفحة تماماً بعد انتهاء تأثير الإخفاء
     setTimeout(function() {
       popup.style.display = "none";
-    }, 500);
+    }, 600);
   }
+
+  // كود عداد الزوار باستخدام CountAPI
+  // ملاحظة: يمكنك تغيير "m-sh31-site-visits" إلى أي اسم آخر بالإنجليزية
+  const counterKey = "m-sh31-site-visits";
+  
+  fetch(`https://api.countapi.xyz/hit/${counterKey}/visits`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('visitorCount').innerText = `عدد الزوار: ${data.value}`;
+    })
+    .catch(error => {
+      console.error('حدث خطأ في تحميل العداد:', error);
+      document.getElementById('visitorCount').innerText = 'عدد الزوار: غير متاح';
+    });
 </script>
 
 </body>
